@@ -13,17 +13,16 @@ void printBoard(char board[11][11], int rows, int columns){
 int main(){
   int rows = 11;
   int columns = 11;
-  int secretRows = 5;
-  int secretColumns = 5;
+  int secretRows = rows/2;
+  int secretColumns = rows/2;
 
 
   //Create the board
   char board[11][11];
-  //Put numbers on
-
-  for (int i = 1; i < columns; i++){
+  //Itinerate over the columns
+  for (int i = 0; i < columns; i++){
     //Populate the even rows with dashes
-    for (int j = 1; j < rows; j = j + 2){
+    for (int j = 0; j < rows; j = j + 2){
       board[j][i] = '-';
     }
     //Populate the odd rows with "|" and spaces
