@@ -3,18 +3,25 @@
 
 using namespace std;
 
-void printBoard(char board[11][11], int rows, int columns){
+void printBoard(char board[11][11], int rows, int columns, int turn){
+  std::cout << "  0 1 2 3 4\t Turn: " << turn <<'\n';
   for (int i = 0; i < rows; i++){
+    if (i%2)
+      std::cout << i/2;
+    else
+      std::cout << " ";
     for (int j = 0; j < columns; j++)
       cout << board[i][j];
     cout << '\n';
   }
 }
+
 int main(){
   int rows = 11;
   int columns = 11;
   int secretRows = rows/2;
   int secretColumns = rows/2;
+  int turn = 1;
 
 
   //Create the board
@@ -52,7 +59,7 @@ int main(){
   for (int i = 3; i < 5; i++)
     secretBoard[i][4] = true;
   //Print the board:
-  printBoard(board, rows, columns);
+  printBoard(board, rows, columns, turn);
 
   bool playerKeepsPlaying = true;
   int attackRow = 0;
@@ -67,6 +74,7 @@ int main(){
       std::cin >> attackColumn;
     } while(attackRow <  0 || attackRow >  4 || attackColumn <  0 || attackColumn > 4);
 
+    turn++;
     if (secretBoard[attackRow][attackColumn]){
       std::cout << "\nA ship was hit!" << '\n';
       if (board[attackRow*2 + 1][attackColumn*2 + 1] != 'S')
@@ -81,6 +89,6 @@ int main(){
       std::cout << "YOU WON!" << '\n';
     }
 
-    printBoard(board, rows, columns);
+    printBoard(board, rows, columns, turn);
   }
 }
