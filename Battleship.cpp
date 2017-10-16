@@ -50,14 +50,14 @@ int main(){
     }
   }
   //Fill in the Big ship
-  for (int i = 1; i < 5; i++)
-    secretBoard[1][i] = true;
+  for (int i = 0; i < 5; i++)
+    secretBoard[i][0] = true;
   //Fill in medium ship
-  for (int i = 0; i < 3; i++)
-    secretBoard[4][i] = true;
+  for (int i = 2; i < 5; i++)
+    secretBoard[1][i] = true;
   //Fill in the small boat
-  for (int i = 3; i < 5; i++)
-    secretBoard[i][4] = true;
+  for (int i = 2; i < 4; i++)
+    secretBoard[4][i] = true;
   //Print the board:
   printBoard(board, rows, columns, turn);
 
@@ -77,9 +77,9 @@ int main(){
     turn++;
     if (secretBoard[attackRow][attackColumn]){
       std::cout << "\nA ship was hit!" << '\n';
-      if (board[attackRow*2 + 1][attackColumn*2 + 1] != 'S')
+      if (board[attackRow*2 + 1][attackColumn*2 + 1] != 'X')
         hitCounter--;
-      board[attackRow*2 + 1][attackColumn*2 + 1] = 'S';
+      board[attackRow*2 + 1][attackColumn*2 + 1] = 'X';
     } else {
       std::cout << "You missed..." << '\n';
       board[attackRow*2 + 1][attackColumn*2 + 1] = 'O';
@@ -87,6 +87,11 @@ int main(){
     if (hitCounter == 0){
       playerKeepsPlaying = false;
       std::cout << "YOU WON!" << '\n';
+      std::cout << "It took you " << turn << " turns" << '\n';
+    }
+    if (turn >= 15){
+      playerKeepsPlaying = false;
+      std::cout << "YOU LOST!" << '\n';
     }
 
     printBoard(board, rows, columns, turn);
