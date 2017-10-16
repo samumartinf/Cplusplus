@@ -37,6 +37,11 @@ int main(){
 
   //Create Secret array
   bool secretBoard[secretRows][secretColumns];
+  for (int r = 0; r < 5; r++){
+    for (int c = 0; c < 5; c++){
+      secretBoard[r][c] = false;
+    }
+  }
   //Fill in the Big ship
   for (int i = 1; i < 5; i++)
     secretBoard[1][i] = true;
@@ -48,4 +53,25 @@ int main(){
     secretBoard[i][4] = true;
   //Print the board:
   printBoard(board, rows, columns);
+
+  bool playerKeepsPlaying = true;
+  int attackRow = 0;
+  int attackColumn = 0;
+  int hitCounter = 9;
+
+  while (playerKeepsPlaying) {
+    std::cout << "Enter a row: ";
+    std::cin >> attackRow;
+    std::cout << "\nEnter a column: ";
+    std::cin >> attackColumn;
+
+    if (secretBoard[attackRow][attackColumn]){
+        std::cout << "\nA ship was hit" << '\n';
+        secretBoard[attackRow][attackColumn] = false;
+        hitCounter--;
+        board[attackRow*2 + 1][attackColumn*2 + 1] = 'S';
+    }
+
+    printBoard(board, rows, columns);
+  }
 }
