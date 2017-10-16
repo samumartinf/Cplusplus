@@ -60,16 +60,25 @@ int main(){
   int hitCounter = 9;
 
   while (playerKeepsPlaying) {
-    std::cout << "Enter a row: ";
-    std::cin >> attackRow;
-    std::cout << "\nEnter a column: ";
-    std::cin >> attackColumn;
+    do {
+      std::cout << "Enter a row: ";
+      std::cin >> attackRow;
+      std::cout << "\nEnter a column: ";
+      std::cin >> attackColumn;
+    } while(attackRow <  0 || attackRow >  4 || attackColumn <  0 || attackColumn > 4);
 
     if (secretBoard[attackRow][attackColumn]){
-        std::cout << "\nA ship was hit" << '\n';
-        secretBoard[attackRow][attackColumn] = false;
+      std::cout << "\nA ship was hit!" << '\n';
+      if (board[attackRow*2 + 1][attackColumn*2 + 1] != 'S')
         hitCounter--;
-        board[attackRow*2 + 1][attackColumn*2 + 1] = 'S';
+      board[attackRow*2 + 1][attackColumn*2 + 1] = 'S';
+    } else {
+      std::cout << "You missed..." << '\n';
+      board[attackRow*2 + 1][attackColumn*2 + 1] = 'O';
+    }
+    if (hitCounter == 0){
+      playerKeepsPlaying = false;
+      std::cout << "YOU WON!" << '\n';
     }
 
     printBoard(board, rows, columns);
