@@ -10,11 +10,18 @@ class DNA_DB
 {
   public:
     string fileName;
-    DNA_DB(string fileName);
+    DNA_DB();
+    string getFileName(){
+      return fileName;
+    }
+    void setFileName(string name){
+      fileName = name;
+    }
 };
-DNA_DB::DNA_DB(string fileName){
-  fileName = fileName;
+DNA_DB::DNA_DB(){ //constructor for the class object
+  return;
 };
+
 
 //Functions used
 std::vector<DNA_DB> loadFiles(std::vector<DNA_DB> dna_db);
@@ -36,11 +43,15 @@ vector<DNA_DB> loadFiles(vector<DNA_DB> dna_db){
   //cutting the string into separated names
   istringstream ssFileNames(fileNames); //Creating a istringstream for the cutting of the sring
   string tempString;
+  int i = 0; //initialize counter
   while(getline(ssFileNames, tempString, ',')) {
-    if (tempString[0] == ' '){
+    if (tempString[0] == ' '){ //Remove the first space (if it exists) between the coma and the file name
       tempString = tempString.substr(1, tempString.size()-1);
     }
-    dna_db.push_back(DNA_DB(tempString));
+    dna_db.push_back(DNA_DB()); //initialising the class object
+    dna_db[i].setFileName(tempString); //set name for the object
+    std::cout << dna_db[i].fileName << '\n';
+    i++;
   }
   return dna_db;
 }
@@ -48,11 +59,12 @@ vector<DNA_DB> loadFiles(vector<DNA_DB> dna_db){
 //Display and manage the data from the first menu
 void firstMenu(vector<DNA_DB> dna_db){
   int i = 0;
-  std::cout << "Select one of the following options:" << '\n';
-  std::cout << "(S)  Summary of the statistics of the DNA database" << '\n';
+  cout << "Select one of the following options:" << '\n';
+  cout << "(S)  Summary of the statistics of the DNA database" << '\n';
   while(i < dna_db.size()){
-    std::cout << '(' << i+1 << ")  Analyse" << dna_db[i].fileName << '\n'; //Debugging purposes
+    std::cout << '(' << i+1 << ")  Analyse " << dna_db[i].getFileName() << '\n'; // Currently not printing the name
     i++;
   }
   std::cout << "(Q)  Quit" << '\n';
+
 }
