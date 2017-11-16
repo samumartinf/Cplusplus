@@ -6,8 +6,7 @@ using std::vector;
 using namespace std;
 
 //Classes
-class DNA_DB
-{
+class DNA_DB{
   public:
     string fileName;
     DNA_DB();
@@ -25,13 +24,36 @@ DNA_DB::DNA_DB(){ //constructor for the class object
 
 //Functions used
 std::vector<DNA_DB> loadFiles(std::vector<DNA_DB> dna_db);
-void firstMenu(vector<DNA_DB> dna_db);
+char firstMenu(vector<DNA_DB> dna_db);
 
+//Main Function
 int main(){
   vector<DNA_DB> dna_db;
   dna_db.clear(); //Clear the vector before use
   dna_db = loadFiles(dna_db);
-  firstMenu(dna_db);
+  char firstMenuAnswer = firstMenu(dna_db);
+  char num;
+  std::cout << firstMenuAnswer << '\n';
+  switch (firstMenuAnswer) {
+    case 'q':
+    case 'Q':
+      break;
+    case 's':
+    case 'S':
+      //Function to summarize the data
+      std::cout << "summarize selected" << '\n'; //Debugging purposes
+    default:
+      //Loop through the number of databases loaded, if not found, return the user to the  first menu
+      for (int i = 1; i <= dna_db.size(); i++) {
+        num = i;
+        if (firstMenuAnswer == num){
+          //Jump to the second menu
+          std::cout << "jump to second menu using database: " << dna_db[i].getFileName() <<  '\n'; //this is not being loaded
+          break;
+        }
+      }
+
+  }
   return 0;
 }
 
@@ -56,15 +78,17 @@ vector<DNA_DB> loadFiles(vector<DNA_DB> dna_db){
   return dna_db;
 }
 
-//Display and manage the data from the first menu
-void firstMenu(vector<DNA_DB> dna_db){
+//Display the menu and return the option chosen
+char firstMenu(vector<DNA_DB> dna_db){
   int i = 0;
   cout << "Select one of the following options:" << '\n';
-  cout << "(S)  Summary of the statistics of the DNA database" << '\n';
+  cout << "  (S)  Summary of the statistics of the DNA database" << '\n';
   while(i < dna_db.size()){
-    std::cout << '(' << i+1 << ")  Analyse " << dna_db[i].getFileName() << '\n'; // Currently not printing the name
+    std::cout << "  (" << i+1 << ")  Analyse " << dna_db[i].getFileName() << '\n'; // Currently not printing the name
     i++;
   }
-  std::cout << "(Q)  Quit" << '\n';
-
+  std::cout << "  (Q)  Quit" << '\n';
+  char answer;
+  std::cin >> answer; //An assumption of an input of only one character is made
+  return answer;
 }
