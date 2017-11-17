@@ -81,16 +81,16 @@ void firstMenu(vector<DNA_DB> dna_db){
         stayInMenu = false;
         break;
       case 's':
-      case 'S':
+      case 'S':{
         //Call function to summarize the data
-        cout << "summarize selected" << '\n'; //Debugging purposes
+        ifstream fastaFile;
         for (size_t i = 0; i < dna_db.size(); i++) {
-          ifstream fastaFile;
           fastaFile.open(dna_db[i].getFileName());
           summarizeSequence(fastaFile);
           fastaFile.close();
         }
         break;
+      }
       default:
         //Loop through the number of databases loaded, if not found, return the user to the  first menu
         int selectedFile = (int)answer - 49; //Convert the character to the integer we expect
@@ -108,8 +108,8 @@ void firstMenu(vector<DNA_DB> dna_db){
 bool secondMenu(vector<DNA_DB> dna_db, int fileNum){
   //variables
   char answer;
-  bool quit = false;
-  bool stayInMenu = true;
+  bool stayInMenu1 = true;
+  bool stayInMenu2 = true;
   ifstream fastaFile;
 
   do {
@@ -121,6 +121,15 @@ bool secondMenu(vector<DNA_DB> dna_db, int fileNum){
     cout << "  (Q) Quit" << '\n';
     cin >> answer;
     switch (answer) {
+      case 'R':
+      case 'r':
+        stayInMenu2 = false;
+        break;
+      case 'Q':
+      case 'q':
+        stayInMenu1 = false;
+        stayInMenu2 = false;
+        break;
       case 'H':
       case 'h':
         //print reference
@@ -128,14 +137,16 @@ bool secondMenu(vector<DNA_DB> dna_db, int fileNum){
         //Maybe implement something to wait for user input before printing again the menu?
         break;
       case 'S':
-      case 's':
+      case 's':{
         //Send open file to summarizeSequence function
         summarizeSequence(fastaFile);
         summarizeSequenceExtended(fastaFile);
+        break;
+      }
     }
     fastaFile.close();
-  } while(stayInMenu);
-  return quit;
+  } while(stayInMenu2);
+  return stayInMenu1;
 }
 
 void summarizeSequence(ifstream &fastaFile){
@@ -153,33 +164,37 @@ void summarizeSequence(ifstream &fastaFile){
 }
 
 void summarizeSequenceExtended(ifstream &fastaFile){
+  //variables
   string geneCode;
-  map<char, int> geneInfo; //Map where all the information about the code will be saved
-  char baseTypes[15] = {'G','A','C','T','R','Y','M','K','S','W','B','V','D','N','U'};
-  for (auto base : baseTypes){ //initialize the map with all the possible pairs
-    geneInfo[base] = 0;
-  }
+  int numBasePairs = 0;
   int CRegion = 0;
   int NRegion = 0;
+  map<char, int> geneInfo; //Map where all the information about the code will be saved
+  char baseTypes[15] = {'G','A','C','T','R','Y','M','K','S','W','B','V','D','N','U'};
+
+  //initialize the map with all the possible pairs
+  for (auto base : baseTypes){
+    geneInfo[base] = 0;
+  }
+
   while(getline(fastaFile, geneCode, '\n')){ //itinerate through the whole file line by line
     for (size_t i = 0; i < geneCode.size(); i++) {
-      geneInfo[geneCode[i]]++; //Add one to the given basepair
+      geneInfo[geneCode[i]]++; //Count base pairs
     }
   }
-  std::cout << "Base pair characteristics:" << '\n';
-  int numBasePairs = 0;
-  for(auto elem : geneInfo){ //A first loop to sum all the basePairs
+  cout << "Base pair characteristics:" << '\n';
+  for(auto elem : geneInfo){ //A first loop to sum all the base pairs
     numBasePairs = numBasePairs + elem.second;
 
   }
-  std::cout << "# of base pairs: " << numBasePairs << '\n';
-  for(auto elem : geneInfo){
+  cout << "# of base pairs: " << numBasePairs << '\n';
+  for(auto elem : geneInfo){ //Itinerate through the elements of geneInfo to print out the ones we are interested in
     if (find(std::begin(baseTypes), end(baseTypes), elem.first) != end(baseTypes)) //find returns an iterator to the first occurrence of elem.first, or an iterator to one-past the end of the range if it is not found.
     {
       cout << elem.first << ": " << elem.second << "\n";
     } else{
-      geneInfo['U'] = geneInfo['U'] + elem.second;
+      geneInfo['U'] = geneInfo['U'] + elem.second; //Add to Unknown all the values that don't belong to the standard
     }
   }
-  std::cout << "Unknown: " << geneInfo['U'] <<"\n\n";
+  cout << "Unknown: " << geneInfo['U'] <<"\n\n";
 }
