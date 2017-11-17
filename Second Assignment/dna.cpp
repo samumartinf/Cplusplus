@@ -2,6 +2,9 @@
 #include <sstream>
 #include <vector>
 #include <fstream>
+#include <map>
+#include <algorithm>
+#include <iterator>
 
 using std::vector;
 using namespace std;
@@ -24,9 +27,11 @@ DNA_DB::DNA_DB(){ //constructor for the class object
 
 
 //Functions used
-std::vector<DNA_DB> loadFiles(std::vector<DNA_DB> dna_db);
+vector<DNA_DB> loadFiles(std::vector<DNA_DB> dna_db);
 void firstMenu(vector<DNA_DB> dna_db);
 bool secondMenu(vector<DNA_DB> dna_db, int fileNum);
+void summarizeSequence(ifstream &fastaFile);
+void summarizeSequenceExtended(ifstream &fastaFile);
 
 //Main Function
 int main(){
@@ -79,6 +84,12 @@ void firstMenu(vector<DNA_DB> dna_db){
       case 'S':
         //Call function to summarize the data
         cout << "summarize selected" << '\n'; //Debugging purposes
+        for (size_t i = 0; i < dna_db.size(); i++) {
+          ifstream fastaFile;
+          fastaFile.open(dna_db[i].getFileName());
+          summarizeSequence(fastaFile);
+          fastaFile.close();
+        }
         break;
       default:
         //Loop through the number of databases loaded, if not found, return the user to the  first menu
@@ -86,8 +97,6 @@ void firstMenu(vector<DNA_DB> dna_db){
         std::cout << "selectedFile = " << selectedFile << '\n';
         if ((selectedFile <= dna_db.size()) && (selectedFile >= 0)){ //
           cout << "jump to second menu using database: " << dna_db[selectedFile].getFileName() <<  '\n'; //this is not being loaded
-          ifstream selectedFastaFile;
-          selectedFastaFile.open()
           stayInMenu = secondMenu(dna_db, selectedFile);
           break;
         }
@@ -97,10 +106,14 @@ void firstMenu(vector<DNA_DB> dna_db){
 }
 
 bool secondMenu(vector<DNA_DB> dna_db, int fileNum){
+  //variables
   char answer;
   bool quit = false;
   bool stayInMenu = true;
+  ifstream fastaFile;
+
   do {
+    fastaFile.open(dna_db[fileNum].getFileName());
     cout << "Select one of the following options:" << '\n';
     cout << "  (H) Help\n  (S) Summary statistics of the DNA sequence" << '\n';
     cout << "  (1) Analyse gap region\n  (2) Analyse code region\n  (3) Analyse base pair range" << '\n';
@@ -116,14 +129,57 @@ bool secondMenu(vector<DNA_DB> dna_db, int fileNum){
         break;
       case 'S':
       case 's':
-        summarizeSequence();
+        //Send open file to summarizeSequence function
+        summarizeSequence(fastaFile);
+        summarizeSequenceExtended(fastaFile);
     }
-    selectedFastaFile.close();
+    fastaFile.close();
   } while(stayInMenu);
   return quit;
 }
 
-void summarizeSequence(){
-  string str;
-  cout << getline(selectedFastaFile, str, '\n') << '\n';
+void summarizeSequence(ifstream &fastaFile){
+  string rubbish;
+  string description;
+  string gid;
+  string ref;
+  //Retrieve from the header all the relevant information
+  getline(fastaFile, rubbish, '|');
+  getline(fastaFile, gid, '|');
+  getline(fastaFile, rubbish, '|');
+  getline(fastaFile, ref, '|');
+  getline(fastaFile, description, '\n');
+  std::cout << "Sequence Identifiers:\nDescription: " << description << "\nGID: " << gid << "\nREF: " << ref << "\n\n";
+}
+
+void summarizeSequenceExtended(ifstream &fastaFile){
+  string geneCode;
+  map<char, int> geneInfo; //Map where all the information about the code will be saved
+  char baseTypes[15] = {'G','A','C','T','R','Y','M','K','S','W','B','V','D','N','U'};
+  for (auto base : baseTypes){ //initialize the map with all the possible pairs
+    geneInfo[base] = 0;
+  }
+  int CRegion = 0;
+  int NRegion = 0;
+  while(getline(fastaFile, geneCode, '\n')){ //itinerate through the whole file line by line
+    for (size_t i = 0; i < geneCode.size(); i++) {
+      geneInfo[geneCode[i]]++; //Add one to the given basepair
+    }
+  }
+  std::cout << "Base pair characteristics:" << '\n';
+  int numBasePairs = 0;
+  for(auto elem : geneInfo){ //A first loop to sum all the basePairs
+    numBasePairs = numBasePairs + elem.second;
+
+  }
+  std::cout << "# of base pairs: " << numBasePairs << '\n';
+  for(auto elem : geneInfo){
+    if (find(std::begin(baseTypes), end(baseTypes), elem.first) != end(baseTypes)) //find returns an iterator to the first occurrence of elem.first, or an iterator to one-past the end of the range if it is not found.
+    {
+      cout << elem.first << ": " << elem.second << "\n";
+    } else{
+      geneInfo['U'] = geneInfo['U'] + elem.second;
+    }
+  }
+  std::cout << "Unknown: " << geneInfo['U'] <<"\n\n";
 }
