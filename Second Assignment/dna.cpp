@@ -13,16 +13,31 @@ using namespace std;
 class DNA_DB{
   public:
     string fileName;
-    DNA_DB();
+    string geneCode;
+    int numBasePairs;
+    string ref;
+    string gid;
+    string description;
+    int nRegion;
+    int cRegion;
+    DNA_DB(string fileName);
     string getFileName(){
       return fileName;
+    }
+    string getHeader(){
+      return header;
     }
     void setFileName(string name){
       fileName = name;
     }
 };
-DNA_DB::DNA_DB(){ //constructor for the class object
-  return;
+DNA_DB::DNA_DB(string fileName){ //constructor for the class object
+  string rubbish;
+  getline(fastaFile, rubbish, '|');
+  getline(fastaFile, gid, '|');
+  getline(fastaFile, rubbish, '|');
+  getline(fastaFile, ref, '|');
+  getline(fastaFile, description, '\n');
 };
 
 
@@ -38,6 +53,7 @@ int main(){
   vector<DNA_DB> dna_db;
   dna_db.clear(); //Clear the vector before use
   dna_db = loadFiles(dna_db);
+  cout << dna_db[0].gid  << '\n';
   firstMenu(dna_db);
   return 0;
 }
@@ -55,7 +71,7 @@ vector<DNA_DB> loadFiles(vector<DNA_DB> dna_db){
     if (tempString[0] == ' '){ //Remove the first space (if it exists) between the coma and the file name
       tempString = tempString.substr(1, tempString.size()-1);
     }
-    dna_db.push_back(DNA_DB()); //initialising the class object
+    dna_db.push_back(DNA_DB(tempString)); //initialising the class object
     dna_db[i].setFileName(tempString); //set name for the object
     std::cout << dna_db[i].fileName << '\n';
     i++;
@@ -166,7 +182,7 @@ void summarizeSequence(ifstream &fastaFile){
   getline(fastaFile, rubbish, '|');
   getline(fastaFile, ref, '|');
   getline(fastaFile, description, '\n');
-  std::cout << "Sequence Identifiers:\nDescription: " << description << "\nGID: " << gid << "\nREF: " << ref << "\n\n";
+  cout << "Sequence Identifiers:\nDescription: " << description << "\nGID: " << gid << "\nREF: " << ref << "\n\n";
 }
 
 void summarizeSequenceExtended(ifstream &fastaFile){
@@ -221,8 +237,27 @@ void optionOneSelected(ifstream &fastaFile) {
   string rubbish;
   string line;
   string geneCode;
+  int startBP;
+  int endBP;
+  int gapRegionCurrent;
+  int gapRegionSearching;
   getline(fastaFile, rubbish, '\n');
   while(getline(fastaFile, line)){ //itinerate through the whole file and append to geneCode
     geneCode.append(line);
+  }
+  for (size_t i = 0; i < geneCode.size(); i++) {
+      if (geneCode[i] == 'N') {
+        if (geneCode[i-1] != 'N') {
+          gapRegionCurrent++;
+          if (gapRegionCurrent == gapRegionSearching) {
+            startBP = i;
+            //gapRegionCurrent++; //This is only in to make sure that startBP does not change when we have the number we want
+            cout << geneCode[i] << '\n';
+          }
+        }
+        if (gapRegionCurrent == gapRegionSearching) {
+          /* code */
+        }
+      }
   }
 }
