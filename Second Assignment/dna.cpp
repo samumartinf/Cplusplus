@@ -121,6 +121,12 @@ bool secondMenu(vector<DNA_DB> dna_db, int fileNum){
     cout << "  (Q) Quit" << '\n';
     cin >> answer;
     switch (answer) {
+      case '1':
+      case '2':
+      case '3':
+      case '4':
+      case '5':
+        break;
       case 'R':
       case 'r':
         stayInMenu2 = false;
@@ -165,10 +171,11 @@ void summarizeSequence(ifstream &fastaFile){
 
 void summarizeSequenceExtended(ifstream &fastaFile){
   //variables
+  string line;
   string geneCode;
   int numBasePairs = 0;
-  int CRegion = 0;
-  int NRegion = 0;
+  int cRegion = 0;
+  int nRegion = 0;
   map<char, int> geneInfo; //Map where all the information about the code will be saved
   char baseTypes[15] = {'G','A','C','T','R','Y','M','K','S','W','B','V','D','N','U'};
 
@@ -176,12 +183,23 @@ void summarizeSequenceExtended(ifstream &fastaFile){
   for (auto base : baseTypes){
     geneInfo[base] = 0;
   }
-
-  while(getline(fastaFile, geneCode, '\n')){ //itinerate through the whole file line by line
-    for (size_t i = 0; i < geneCode.size(); i++) {
-      geneInfo[geneCode[i]]++; //Count base pairs
-    }
+  std::cout << "Please be patient..." << "\n\n";
+  while(getline(fastaFile, line)){ //itinerate through the whole file and append to geneCode
+    geneCode.append(line);
   }
+  for (size_t i = 0; i < geneCode.size(); i++) {
+      geneInfo[geneCode[i]]++; //Count base pairs
+      if (geneCode[i] == 'N' && geneCode[i+1] != 'N') {
+        nRegion++;
+      }
+  }
+  if (geneCode[geneCode.size()-1] == 'N')
+    cRegion = nRegion - 1;
+  else
+    cRegion = nRegion + 1;
+  cout << "# of Regions: " << cRegion + nRegion << '\n'<< "# N regions: " << nRegion << '\n' << "# C regions: " << cRegion << "\n\n";
+
+
   cout << "Base pair characteristics:" << '\n';
   for(auto elem : geneInfo){ //A first loop to sum all the base pairs
     numBasePairs = numBasePairs + elem.second;
@@ -197,4 +215,14 @@ void summarizeSequenceExtended(ifstream &fastaFile){
     }
   }
   cout << "Unknown: " << geneInfo['U'] <<"\n\n";
+}
+
+void optionOneSelected(ifstream &fastaFile) {
+  string rubbish;
+  string line;
+  string geneCode;
+  getline(fastaFile, rubbish, '\n');
+  while(getline(fastaFile, line)){ //itinerate through the whole file and append to geneCode
+    geneCode.append(line);
+  }
 }
