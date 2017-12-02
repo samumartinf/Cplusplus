@@ -205,8 +205,7 @@ bool secondMenu(DNA_DB dataBase){
   //variables
   char answer;
   string input;
-  string fileN;
-  bool validFile;
+  string file;
   bool stayInMenu1 = true;
   bool stayInMenu2 = true;
   //Stay in menu while true (same as in the first menu)
@@ -245,22 +244,9 @@ bool secondMenu(DNA_DB dataBase){
       }
       case '5':{
         cout << "Specify the DNA sequence file you would like to find: " << '\n';
-        vector<DNA_DB> fileVect; //Small vector to utilise the constructor
-        //Make sure that the file exists
-        ifstream file;
-        do {
-          validFile = true;
-          getline(cin, fileN);
-          ifstream file(fileN);
-          //Check wheter file exists
-          if (file.is_open()) {
-            file.close();
-          }else{
-            cout << "Please try again with a valid file: " << '\n';
-            validFile = false;
-          }
-        } while(validFile);
-        fileVect.push_back(DNA_DB(fileN));
+        getline(cin, file);
+        vector<DNA_DB> fileVect;
+        fileVect.push_back(DNA_DB(file));
         findByInput(dataBase, fileVect[fileVect.size() -1].geneCode);
         break;
       }
@@ -317,26 +303,21 @@ void analyseGapRegion(DNA_DB dataBase){
   int selectedRegion;
   string regionStr;
 
-  if (dataBase.nRegion == 0){
-    cout << "There are no gap regions" << '\n';
-  } else {
-    do {
-      while (true) {
-        cout << "Enter gap region number: " << '\n';
-        getline(cin, regionStr);
-        // This code converts from string to number safely.
-       stringstream myStream(regionStr);
-       if (myStream >> selectedRegion)
-         break;
-       cout << "Invalid number, please try again" << endl;
-     }
-    } while(selectedRegion > dataBase.nRegion || selectedRegion < 1); //Chech that the input is valid
-    cout << "Selected sequence: \nBase pair range: (" << dataBase.nRegions[selectedRegion-1].first << ", " << dataBase.nRegions[selectedRegion-1].second << ")\nSequence:\n";
-    for (size_t i = dataBase.nRegions[selectedRegion-1].first; i < dataBase.nRegions[selectedRegion-1].second; i++) {
-      cout << dataBase.geneCode[i];
-    }
+  do {
+    while (true) {
+      cout << "Enter gap region number: " << '\n';
+      getline(cin, regionStr);
+      // This code converts from string to number safely.
+     stringstream myStream(regionStr);
+     if (myStream >> selectedRegion)
+       break;
+     cout << "Invalid number, please try again" << endl;
+   }
+  } while(selectedRegion > dataBase.nRegion || selectedRegion < 1); //Chech that the input is valid
+  cout << "Selected sequence: \nBase pair range: (" << dataBase.nRegions[selectedRegion-1].first << ", " << dataBase.nRegions[selectedRegion-1].second << ")\nSequence:\n";
+  for (size_t i = dataBase.nRegions[selectedRegion-1].first; i < dataBase.nRegions[selectedRegion-1].second; i++) {
+    cout << dataBase.geneCode[i];
   }
-
   cout << '\n';
 }
 
@@ -344,27 +325,22 @@ void analyseCodingRegion(DNA_DB dataBase){
   //variable
   int selectedRegion;
   string regionStr;
-  if (dataBase.cRegion == 0) {
-    cout << "Sorry, there are no coding regions" << '\n';
-  } else {
-    do {
-      while (true) {
-        cout << "Enter coding region number: " << '\n';
-        getline(cin, regionStr);
-        // This code converts from string to number safely.
-       stringstream myStream(regionStr);
-       if (myStream >> selectedRegion){
-         break;
-       }
-       cout << "Invalid number, please try again" << endl;
-     }
-   } while(selectedRegion > dataBase.cRegion || selectedRegion < 1); //Make sure that the region entered is valid and that so is the input
-    cout << "Selected sequence: \nBase pair range: (" << dataBase.cRegions[selectedRegion-1].first << ", " << dataBase.cRegions[selectedRegion-1].second << ")\nSequence:\n";
 
-    //Just print the whole region
-    for (size_t i = dataBase.cRegions[selectedRegion-1].first; i < dataBase.cRegions[selectedRegion-1].second; i++) {
-      cout << dataBase.geneCode[i];
-    }
+  do {
+    while (true) {
+      cout << "Enter coding region number: " << '\n';
+      getline(cin, regionStr);
+      // This code converts from string to number safely.
+     stringstream myStream(regionStr);
+     if (myStream >> selectedRegion){
+       break;
+     }
+     cout << "Invalid number, please try again" << endl;
+   }
+ } while(selectedRegion > dataBase.cRegion || selectedRegion < 1);
+  cout << "Selected sequence: \nBase pair range: (" << dataBase.cRegions[selectedRegion-1].first << ", " << dataBase.cRegions[selectedRegion-1].second << ")\nSequence:\n";
+  for (size_t i = dataBase.cRegions[selectedRegion-1].first; i < dataBase.cRegions[selectedRegion-1].second; i++) {
+    cout << dataBase.geneCode[i];
   }
   cout << '\n';
 }
@@ -425,7 +401,7 @@ void findByInput(DNA_DB dataBase, string regionToFind) {
       }
       cout << '\n';
       count++;
-      code = code.substr(found + regionToFind.size()); //Remove from the main string in which we look for all the region that has been searched for already
+      code = code.substr(found + regionToFind.size());
     }
   } while (found != string::npos);
 }

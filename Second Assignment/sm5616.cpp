@@ -245,18 +245,15 @@ bool secondMenu(DNA_DB dataBase){
       }
       case '5':{
         cout << "Specify the DNA sequence file you would like to find: " << '\n';
-        vector<DNA_DB> fileVect; //Small vector to utilise the constructor
-        //Make sure that the file exists
-        ifstream file;
+        getline(cin, fileN);
+        vector<DNA_DB> fileVect;
+        ifstream file(fileN);
         do {
           validFile = true;
-          getline(cin, fileN);
           ifstream file(fileN);
-          //Check wheter file exists
-          if (file.is_open()) {
-            file.close();
-          }else{
+          if (!file) {
             cout << "Please try again with a valid file: " << '\n';
+            getline(cin, fileN);
             validFile = false;
           }
         } while(validFile);
